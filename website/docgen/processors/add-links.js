@@ -8,6 +8,17 @@ var templateMapping = {
 };
 
 /**
+ * A lookup table with all the types in the parsed files.
+ * @type {Object.<string, Array.<Object>>}
+ */
+var typeTable;
+
+/**
+ * The hash used to generate the links to the source code.
+ */
+var linksHash = 'master';
+
+/**
  * Add a link to the source code.
  * @param {!Object} doc Current document.
  */
@@ -50,13 +61,12 @@ var escape = function(str) {
 };
 
 /**
- * Create a markdown link with the following format: '[foo.Bar](#foobar)'
+ * Create a link with the following format: '[foo.Bar]'
  * @param {string} type The type you want to link.
- * return {string} A markdown link for the type.
+ * return {string} A link for the type.
  */
 var toMarkdownLinkFormat = function(type) {
-  var lowercaseType = type.replace(/[\.\$]/g, '').toLocaleLowerCase();
-  return '[' + type + '](#' + lowercaseType + ')';
+  return '[' + type + ']';
 };
 
 /**
@@ -79,6 +89,13 @@ var getTypeString = function(param) {
 
   if (type.type === 'FunctionType') {
     _.each(type.params, replaceWithLinkIfPresent);
+  } else if(type.type === 'TypeApplication') {
+    // Is this an Array.<type>?
+    var match = str.match(/Array\.<(.*)>/);
+    if (match && typeTable[match[1]]) {
+      var typeInsideArray = match[1];
+      str = str.replace(typeInsideArray, toMarkdownLinkFormat(typeInsideArray));
+    }
   } else if (type.type === 'NameExpression') {
     replaceWithLinkIfPresent(type);
   }
@@ -87,44 +104,33 @@ var getTypeString = function(param) {
 };
 
 /**
- * A lookup table with all the types in the parsed files.
- * @type {Object.<string, Array.<Object>>}
+ * Add links to the external documents
  */
-var typeTable;
+module.exports = function addLinks() {
+  return {
+    $runAfter: ['extracting-tags'],
+    $runBefore: ['tags-extracted'],
+    $process: function(docs) {
+      typeTable = _.groupBy(docs, 'name');
 
-/**
- * The hash used to generate the links to the source code.
- */
-var linksHash;
+      docs.forEach(function(doc) {
+        addLinkToSourceCode(doc);
+        doc.description = addLinkToLinkAnnotation(doc.description);
 
-module.exports = {
-  name: 'add-links',
-  description: 'Add links to the external documents',
-  runAfter: ['extracting-tags'],
-  runBefore: ['tags-extracted'],
-  init: function(config) {
-    linksHash = config.linksHash;
-  },
-  process: function(docs) {
-    typeTable = _.groupBy(docs, 'name');
+        // Add links for the param types.
+        _.each(doc.params, function(param) {
+          param.paramString = getTypeString(param);
+        });
 
-    docs.forEach(function(doc) {
-      addLinkToSourceCode(doc);
-      doc.description = addLinkToLinkAnnotation(doc.description);
-
-      // Add links for the param types.
-      _.each(doc.params, function(param) {
-        param.paramString = getTypeString(param);
+        // Add links for the return types.
+        var returns = doc.returns;
+        if (returns) {
+          doc.returnString = getTypeString(returns);
+          returns.description = addLinkToLinkAnnotation(returns.description);
+        } else {
+          doc.returnString = '';
+        }
       });
-
-      // Add links for the return types.
-      var returns = doc.returns;
-      if (returns) {
-        doc.returnString = getTypeString(returns);
-        returns.description = addLinkToLinkAnnotation(returns.description);
-      } else {
-        doc.returnString = '';
-      }
-    });
+    }
   }
 };

@@ -1,13 +1,16 @@
-var linksProcessor = require('../processors/add-links');
+var linksProcessorFn = require('../processors/add-links');
 var _ = require('lodash');
 
 
 describe('add-links', function() {
+  var linksProcessor;
+
+  beforeEach(function() {
+    linksProcessor = linksProcessorFn()
+  });
+
   var addLinks = function(docs) {
-    linksProcessor.init({
-      linksHash: 'master'
-    });
-    linksProcessor.process(docs);
+    linksProcessor.$process(docs);
   };
 
   it('should add protractor link', function() {
@@ -119,12 +122,10 @@ describe('add-links', function() {
       return docs[1].params[index].paramString;
     };
     expect(getDesc(0)).toBe(
-        'function([webdriver.WebElement](#webdriverwebelement), number)');
-    expect(getDesc(1)).toBe(
-        '[Protractor](#protractor)');
+        'function([webdriver.WebElement], number)');
+    expect(getDesc(1)).toBe('[Protractor]');
 
-    expect(docs[1].returnString).toBe(
-        '[webdriver.WebElement](#webdriverwebelement)');
+    expect(docs[1].returnString).toBe('[webdriver.WebElement]');
   });
 
   it('should add @link links', function() {
@@ -163,9 +164,9 @@ describe('add-links', function() {
     addLinks(docs);
 
     // Then ensure a link was added to the type.
-    expect(docs[1].description).toBe('A promise that ' +
-        '[webdriver.WebElement](#webdriverwebelement)s');
-    expect(docs[1].returns.description).toBe('A promise located ' +
-        '[webdriver.WebElement](#webdriverwebelement)s.');
+    expect(docs[1].description).
+        toBe('A promise that [webdriver.WebElement]s');
+    expect(docs[1].returns.description).
+        toBe('A promise located [webdriver.WebElement]s.');
   });
 });
