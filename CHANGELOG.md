@@ -8,6 +8,17 @@
 - ([548f0c0](https://github.com/angular/protractor/commit/548f0c09748502cb6ae87e602db09e6df78df348)) 
   feat(webdriver): bump WebDriver to version 2.43
 
+- ([f7c3c37](https://github.com/angular/protractor/commit/f7c3c370a239218f6143a4992b1fc4763f4cdd3d)) 
+  feat(webdriver): update to WebDriverJS 2.43.5
+
+  Breaking Changes WebDriverJS has introduced changes in the way that Promises are handled in
+  version 2.43. See
+  https://github.com/SeleniumHQ/selenium/blob/master/javascript/node/selenium-webdriver/CHANGES.md
+  - `webdriver.WebElement` has now been split into `webdriver.WebElementPromise`
+    and `webdriver.WebElement` so that it does not resolve to itself. This change
+    should be largely transparent to users.
+  - `WebElement.toWireValue` has been removed.
+
 - ([466b383](https://github.com/angular/protractor/commit/466b3831569dc28c5fc2be31fbdf96574e57c3f0)) 
   feat(protractor): allow advanced features for ElementArrayFinder
 
@@ -59,19 +70,6 @@
 
   Now, `$('nonexistant').$('foo').isPresent()` will return false instead of throwing an error. This
   change also adds tests that ensure that catching errors from promises works as expected.
-
-## Breaking Changes
-
-- ([f7c3c37](https://github.com/angular/protractor/commit/f7c3c370a239218f6143a4992b1fc4763f4cdd3d)) 
-  feat(webdriver): update to WebDriverJS 2.43.5
-
-  Breaking Changes WebDriverJS has introduced changes in the way that Promises are handled in
-  version 2.43. See
-  https://github.com/SeleniumHQ/selenium/blob/master/javascript/node/selenium-webdriver/CHANGES.md
-  - `webdriver.WebElement` has now been split into `webdriver.WebElementPromise`
-    and `webdriver.WebElement` so that it does not resolve to itself. This change
-    should be largely transparent to users.
-  - `WebElement.toWireValue` has been removed.
 
 
 # 1.2.0
