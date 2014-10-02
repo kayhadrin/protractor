@@ -185,6 +185,19 @@ describe('ElementFinder', function() {
       expect(finalResult.getText()).toEqual('Hiya');
     });
   });
+
+  it('should allow null as success handler', function() {
+    browser.get('index.html#/form');
+
+    var usernameInput = element(by.model('username'));
+    var name = element(by.binding('username'));
+
+    expect(name.getText()).toEqual('Anon');
+    expect(
+      name.getText().then(null, function(){})
+    ).toEqual('Anon');
+
+  });
 });
 
 describe('ElementArrayFinder', function() {
@@ -194,6 +207,15 @@ describe('ElementArrayFinder', function() {
 
     var multiElement = element.all(by.binding('item.reusedBinding'));
     expect(multiElement.getText()).toEqual(['Outer: outer', 'Inner: inner']);
+  });
+
+  it('click action should act on all elements', function() {
+    var checkboxesElms = $$('#checkboxes input');
+    browser.get('index.html');
+
+    expect(checkboxesElms.isSelected()).toEqual([true, false, false]);
+    checkboxesElms.click();
+    expect(checkboxesElms.isSelected()).toEqual([false, true, true]);
   });
 
   it('action should act on all elements selected by filter', function() {
