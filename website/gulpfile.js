@@ -4,7 +4,7 @@ var del = require('del');
 var Dgeni = require('dgeni');
 var gulp = require('gulp');
 var less = require('gulp-less');
-var marked = require('gulp-marked');
+var markdown = require('gulp-markdown');
 var minifyCSS = require('gulp-minify-css');
 var path = require('path');
 var rename = require("gulp-rename");
@@ -35,6 +35,10 @@ gulp.task('dgeni', function() {
 
   dgeni.generate().then(function(docs) {
     console.log(docs.length, 'docs generated');
+  }).then(function() {
+    // Copy files over
+    gulp.src(['docgen/build/*.json'])
+        .pipe(gulp.dest(paths.outputDir + '/apiDocs'));
   });
 });
 
@@ -54,10 +58,6 @@ gulp.task('copyFiles', function() {
       .pipe(gulp.dest(paths.outputDir));
   gulp.src('partials/*.html')
       .pipe(gulp.dest(paths.outputDir + '/partials'));
-
-  // Degeni docs.
-  gulp.src(['docgen/build/*.json'])
-      .pipe(gulp.dest(paths.outputDir + '/apiDocs'));
 
   // Images.
   gulp.src('img/**')
@@ -103,7 +103,7 @@ gulp.task('watch', function() {
 // Transform md files to html.
 gulp.task('markdown', function() {
   gulp.src(['../docs/*.md', '!../docs/api.md'])
-      .pipe(marked())
+      .pipe(markdown())
       // Fix md links.
       .pipe(replace(/\/docs\/(.*)\.md/g, '#/$1'))
       // Fix reference conf links.

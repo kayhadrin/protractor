@@ -19,13 +19,19 @@ var passingTests = [
   'node lib/cli.js spec/withLoginConf.js',
   'node lib/cli.js spec/suitesConf.js --suite okmany',
   'node lib/cli.js spec/suitesConf.js --suite okspec',
-  'node lib/cli.js spec/suitesConf.js --suite okmany,okspec'
+  'node lib/cli.js spec/suitesConf.js --suite okmany,okspec',
+  'node lib/cli.js spec/pluginsBasicConf.js',
+  'node lib/cli.js spec/pluginsFullConf.js',
+  'node lib/cli.js spec/ngHintSuccessConfig.js',
+  'node lib/cli.js spec/interactionConf.js',
+  'node lib/cli.js spec/directConnectConf.js',
+  'node lib/cli.js spec/restartBrowserBetweenTestsConf.js'
 ];
 
 passingTests.push(
     'node node_modules/minijasminenode/bin/minijn ' +
     glob('spec/unit/*.js').join(' ') + ' ' +
-    glob('docgen/spec/*.js').join(' '));
+    glob('website/docgen/spec/*.js').join(' '));
 
 var executor = new Executor();
 
@@ -84,6 +90,20 @@ executor.addCommandlineTest('node lib/cli.js spec/errorTest/mochaFailureConf.js'
     .expectErrors([{
       message: 'expected \'My AngularJS App\' to equal \'INTENTIONALLY INCORRECT\'',
       stacktrace: 'mocha_failure_spec.js:11:20'
+    }]);
+
+// Check ngHint plugin
+
+executor.addCommandlineTest('node lib/cli.js spec/ngHintFailConfig.js')
+    .expectExitCode(1)
+    .expectErrors([{
+      message: 'warning -- ngHint plugin cannot be run as ngHint code was ' +
+          'never included into the page'
+    }, {
+      message: 'warning -- ngHint is included on the page, but is not active ' +
+          'because there is no `ng-hint` attribute present'
+    }, {
+      message: 'warning -- Module "xApp" was created but never loaded.'
     }]);
 
 executor.execute();
