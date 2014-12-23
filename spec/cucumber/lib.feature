@@ -15,11 +15,11 @@ Feature: Running Cucumber with Protractor
     Then the title should equal "My AngularJS App"
 
   @dev
-  Scenario: Find element by css selector
+  Scenario: Find element by css selector using $()
     Given I go on "index.html"
     Then I can find an element by css using the selector "body"
 
   @dev
-  Scenario: Do not find element by css selector if there is no match
+  Scenario: Do not find element by css selector using $() if there is no match
     Given I go on "index.html"
     Then I cannot find an element by css using the selector "unknown_tag"
