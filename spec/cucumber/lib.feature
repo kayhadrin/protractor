@@ -13,3 +13,13 @@ Feature: Running Cucumber with Protractor
   Scenario: Wrapping WebDriver
     Given I go on "index.html"
     Then the title should equal "My AngularJS App"
+
+  @dev
+  Scenario: Find element by css selector
+    Given I go on "index.html"
+    Then I can find an element by css using the selector "body"
+
+  @dev
+  Scenario: Do not find element by css selector if there is no match
+    Given I go on "index.html"
+    Then I cannot find an element by css using the selector "unknown_tag"

@@ -38,4 +38,14 @@ module.exports = function() {
         expect(browser.getTitle()).to.eventually.equal(text).and.notify(next);
     });
 
+    this.Then(/^I (can|cannot) find an element by css using the selector "([^"]*)"$/, function(shouldFind, selector, next) {
+        var expectEventuallyTo = expect(element(by.css(selector))).to.eventually;
+
+        if (shouldFind === 'can') {
+            expectEventuallyTo.notify(next);
+        } else {
+            expectEventuallyTo.be.rejected.and.notify(next);
+        }
+    });
+
 };
