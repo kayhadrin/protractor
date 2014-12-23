@@ -44,7 +44,8 @@ module.exports = ->
     return
 
   @Then /^I (can|cannot) find an element by css using the selector "([^"]*)"$/, (shouldFind, selector, next) ->
-    expectEventuallyTo = expect(element(By.css(selector))).to.eventually
+    # expectEventuallyTo = expect(element(By.css(selector))).to.eventually
+    expectEventuallyTo = expect($ selector).to.eventually
 
     if shouldFind is "can"
       expectEventuallyTo.notify next
